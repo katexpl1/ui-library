@@ -1,4 +1,5 @@
 import { createGlobalStyle } from "styled-components";
+import { colors, fontSizes } from "../consts";
 
 export const GlobalStyles = createGlobalStyle`
   *, *::before, *::after {
@@ -10,9 +11,9 @@ export const GlobalStyles = createGlobalStyle`
   html, body {
     font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
       Roboto, "Helvetica Neue", Arial, sans-serif;
-    font-size: 16px;
-    color: #111;
-    background-color: #fff;
+    font-size: ${fontSizes.md};
+    color: ${colors.neutral[900]};
+    background-color: ${colors.neutral[0]};
   }
 
   button, input, select, textarea {

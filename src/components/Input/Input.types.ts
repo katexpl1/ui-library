@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes, ReactNode } from "react";
+import type { ComponentPropsWithRef, ReactNode } from "react";
 
 export type InputTypes =
   | "text"
@@ -12,31 +12,17 @@ export type InputTypes =
 export type InputSizes = "sm" | "md" | "lg";
 export type InputVariants = "default" | "outlined" | "filled";
 
-export interface InputValidationRule {
-  pattern?: RegExp;
-  validate?: (value: string) => boolean;
-  errorMessage: string;
-  validateOn?: "change" | "blur";
-}
-
-export interface InputProps extends Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  "size" | "type"
-> {
+export interface InputProps
+  extends Omit<ComponentPropsWithRef<"input">, "size" | "type"> {
   type?: InputTypes;
   size?: InputSizes;
   variant?: InputVariants;
-
   label?: string;
   helperText?: string;
   error?: boolean | string;
-  validation?: InputValidationRule | InputValidationRule[];
-
   leftElement?: ReactNode;
   rightElement?: ReactNode;
-
   clearable?: boolean;
   onClear?: () => void;
-
   fullWidth?: boolean;
 }

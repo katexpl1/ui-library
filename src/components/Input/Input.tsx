@@ -1,5 +1,5 @@
-import { forwardRef, useId, useState } from "react";
-import type { ChangeEvent, FocusEvent } from "react";
+import { useId, useState } from "react";
+import type { ChangeEvent } from "react";
 import {
   Wrapper,
   Label,
@@ -11,142 +11,81 @@ import {
 } from "./Input.styles";
 import type { InputProps } from "./Input.types";
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
-  (
-    {
-      type = "text",
-      size = "md",
-      variant = "default",
-      label,
-      helperText,
-      error,
-      validation,
-      leftElement,
-      rightElement,
-      clearable,
-      onClear,
-      fullWidth,
-      id,
-      value,
-      defaultValue,
-      onChange,
-      onBlur,
-      ...props
-    },
-    ref,
-  ) => {
-    const generatedId = useId();
-    const inputId = id ?? generatedId;
+export function Input({
+  ref,
+  type = "text",
+  size = "md",
+  variant = "default",
+  label,
+  helperText,
+  error,
+  leftElement,
+  rightElement,
+  clearable,
+  onClear,
+  fullWidth,
+  id,
+  value,
+  defaultValue,
+  onChange,
+  ...props
+}: InputProps) {
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
+  const hintId = `${inputId}-hint`;
 
-    const [internalValue, setInternalValue] = useState(defaultValue ?? "");
-    const [internalError, setInternalError] = useState<string | null>(null);
+  const [internalValue, setInternalValue] = useState(defaultValue ?? "");
 
-    const isControlled = value !== undefined;
-    const currentValue = isControlled ? value : internalValue;
+  const isControlled = value !== undefined;
+  const currentValue = isControlled ? value : internalValue;
 
-    const validateOn = validation ?? "blur";
+  const errorMessage = typeof error === "string" ? error : undefined;
+  const hasHint = !!(helperText || error);
 
-    const resolvedError =
-      typeof error === "string"
-        ? error
-        : error
-          ? "Invalid value"
-          : internalError;
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!isControlled) setInternalValue(e.target.value);
+    onChange?.(e);
+  };
 
-    const runValidation = (value: string) => {
-      if (!validation) {
-        return;
-      }
+  const handleClear = () => {
+    if (!isControlled) setInternalValue("");
+    onClear?.();
+  };
 
-      const rules = Array.isArray(validation) ? validation : [validation];
+  return (
+    <Wrapper $fullWidth={fullWidth}>
+      {label && <Label htmlFor={inputId}>{label}</Label>}
 
-      for (const rule of rules) {
-        const isValid = rule.pattern
-          ? rule.pattern.test(value)
-          : rule.validate
-            ? rule.validate(value)
-            : true;
+      <InputContainer $size={size} $variant={variant} $error={!!error}>
+        {leftElement && <Slot>{leftElement}</Slot>}
 
-        if (!isValid) {
-          setInternalError(rule.errorMessage);
-          return false;
-        }
-      }
+        <StyledInput
+          id={inputId}
+          ref={ref}
+          type={type}
+          value={currentValue}
+          onChange={handleChange}
+          {...props}
+          aria-invalid={!!error}
+          aria-describedby={hasHint ? hintId : undefined}
+        />
 
-      setInternalError(null);
-      return true;
-    };
-
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-      const nextValue = e.target.value;
-
-      if (!isControlled) {
-        setInternalValue(nextValue);
-      }
-
-      if (validation) {
-        runValidation(nextValue);
-      }
-
-      onChange?.(e);
-    };
-
-    const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
-      if (validation && validateOn === "blur") {
-        runValidation(e.target.value);
-      }
-
-      onBlur?.(e);
-    };
-
-    const handleClear = () => {
-      if (!isControlled) {
-        setInternalValue("");
-      }
-
-      setInternalError(null);
-      onClear?.();
-    };
-
-    return (
-      <Wrapper fullWidth={fullWidth}>
-        {label && <Label htmlFor={inputId}>{label}</Label>}
-
-        <InputContainer size={size} variant={variant} error={!!resolvedError}>
-          {leftElement && <Slot>{leftElement}</Slot>}
-
-          <StyledInput
-            ref={ref}
-            id={inputId}
-            type={type}
-            value={currentValue}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            aria-invalid={!!resolvedError}
-            {...props}
-          />
-
-          {clearable && currentValue && (
-            <SlotButton
-              type="button"
-              onClick={handleClear}
-              aria-label="Clear input"
-            >
-              ✕
-            </SlotButton>
-          )}
-
-          {rightElement && <Slot>{rightElement}</Slot>}
-        </InputContainer>
-
-        {(helperText || resolvedError) && (
-          <HelperText error={!!resolvedError}>
-            {resolvedError ?? helperText}
-          </HelperText>
+        {clearable && currentValue && (
+          <SlotButton type="button" onClick={handleClear} aria-label="Clear input">
+            ✕
+          </SlotButton>
         )}
-      </Wrapper>
-    );
-  },
-);
+
+        {rightElement && <Slot>{rightElement}</Slot>}
+      </InputContainer>
+
+      {hasHint && (
+        <HelperText id={hintId} $error={!!error}>
+          {errorMessage ?? helperText}
+        </HelperText>
+      )}
+    </Wrapper>
+  );
+}
 
 Input.displayName = "Input";

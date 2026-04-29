@@ -1,82 +1,69 @@
 import styled, { css } from "styled-components";
-import type { InputProps } from "./Input.types";
+import { colors, spacing, fontSizes, radius } from "../../consts";
+import type { InputSizes, InputVariants } from "./Input.types";
 
-export const Wrapper = styled.div<{ fullWidth?: boolean }>`
+const sizeStyles = {
+  sm: css`
+    padding: ${spacing[1]} ${spacing[2]};
+    font-size: ${fontSizes.sm};
+  `,
+  md: css`
+    padding: ${spacing[2]} ${spacing[3]};
+    font-size: ${fontSizes.md};
+  `,
+  lg: css`
+    padding: ${spacing[3]} ${spacing[4]};
+    font-size: ${fontSizes.lg};
+  `,
+} satisfies Record<InputSizes, ReturnType<typeof css>>;
+
+const variantStyles = {
+  default: css`
+    border: 1px solid ${colors.neutral[400]};
+    background-color: ${colors.neutral[0]};
+  `,
+  outlined: css`
+    border: 2px solid ${colors.primary[500]};
+    background-color: ${colors.neutral[0]};
+  `,
+  filled: css`
+    border: 1px solid transparent;
+    background-color: ${colors.neutral[100]};
+  `,
+} satisfies Record<InputVariants, ReturnType<typeof css>>;
+
+export const Wrapper = styled.div<{ $fullWidth?: boolean }>`
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  width: ${({ fullWidth }) => (fullWidth ? "100%" : "auto")};
+  gap: ${spacing[1]};
+  width: ${({ $fullWidth }) => ($fullWidth ? "100%" : "auto")};
 `;
 
 export const Label = styled.label`
-  font-size: 14px;
+  font-size: ${fontSizes.sm};
   font-weight: 500;
 `;
 
-export const HelperText = styled.span<{ error?: boolean }>`
-  font-size: 12px;
-  color: ${({ error }) => (error ? "#d32f2f" : "#666")};
+export const HelperText = styled.span<{ $error?: boolean }>`
+  font-size: ${fontSizes.xs};
+  color: ${({ $error }) => ($error ? colors.error[500] : colors.neutral[500])};
 `;
 
 export const InputContainer = styled.div<{
-  size: InputProps["size"];
-  variant: InputProps["variant"];
-  error?: boolean;
+  $size?: InputSizes;
+  $variant?: InputVariants;
+  $error?: boolean;
 }>`
   display: flex;
   align-items: center;
-  border-radius: 6px;
+  border-radius: ${radius.md};
   transition:
     border-color 0.2s,
     box-shadow 0.2s;
 
-  ${({ size }) =>
-    size === "sm" &&
-    css`
-      padding: 4px 8px;
-      font-size: 14px;
-    `}
-
-  ${({ size }) =>
-    size === "md" &&
-    css`
-      padding: 8px 12px;
-      font-size: 16px;
-    `}
-
-  ${({ size }) =>
-    size === "lg" &&
-    css`
-      padding: 12px 16px;
-      font-size: 18px;
-    `}
-
-  ${({ variant }) =>
-    variant === "default" &&
-    css`
-      border: 1px solid #ccc;
-      background-color: #fff;
-    `}
-
-  ${({ variant }) =>
-    variant === "outlined" &&
-    css`
-      border: 2px solid #0070f3;
-      background-color: #fff;
-    `}
-
-  ${({ variant }) =>
-    variant === "filled" &&
-    css`
-      border: 1px solid transparent;
-      background-color: #f5f5f5;
-    `}
-
-  ${({ error }) =>
-    error &&
-    css`
-      border-color: #d32f2f;
-    `}
+  ${({ $size = "md" }) => sizeStyles[$size]}
+  ${({ $variant = "default" }) => variantStyles[$variant]}
+  ${({ $error }) => $error && css`border-color: ${colors.error[500]};`}
 
   &:focus-within {
     box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.25);
@@ -99,13 +86,13 @@ export const StyledInput = styled.input`
 export const Slot = styled.div`
   display: inline-flex;
   align-items: center;
-  margin: 0 4px;
+  margin: 0 ${spacing[1]};
 `;
 
 export const SlotButton = styled.button`
   display: inline-flex;
   align-items: center;
-  margin: 0 4px;
+  margin: 0 ${spacing[1]};
   padding: 0;
   background: none;
   border: none;

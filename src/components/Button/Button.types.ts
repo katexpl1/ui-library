@@ -1,16 +1,11 @@
-import type { ButtonHTMLAttributes, ElementType } from "react";
+import type { ComponentPropsWithRef, ElementType } from "react";
 
 export type ButtonVariants = "primary" | "secondary" | "outline";
 export type ButtonSizes = "sm" | "md" | "lg";
 
-export interface ButtonProps<
-  T extends ElementType = "button",
-> extends ButtonHTMLAttributes<T> {
-  as?: T;
-
+export interface ButtonProps extends ComponentPropsWithRef<"button"> {
+  as?: ElementType;
   variant?: ButtonVariants;
-
   size?: ButtonSizes;
-
   isLoading?: boolean;
 }

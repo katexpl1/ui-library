@@ -8,8 +8,6 @@ const meta: Meta<typeof Input> = {
     leftElement: { table: { disable: true } },
     rightElement: { table: { disable: true } },
     onClear: { table: { disable: true } },
-    validation: { table: { disable: true } },
-
     size: { control: "select", options: ["sm", "md", "lg"] },
     variant: {
       control: "select",
@@ -53,32 +51,5 @@ export const Clearable: Story = {
     label: "Username",
     clearable: true,
     defaultValue: "john_doe",
-  },
-};
-
-export const WithValidation: Story = {
-  args: {
-    label: "Email",
-    placeholder: "Enter email",
-    validation: [
-      {
-        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-        errorMessage: "Invalid email address",
-      },
-    ],
-  },
-};
-
-export const NumbersOnly: Story = {
-  args: {
-    label: "Only numbers",
-    validation: [
-      { pattern: /^[0-9]+$/, errorMessage: "Only digits allowed" },
-      {
-        validate: (val) => val.length >= 5 && val.length <= 10,
-        errorMessage: "Number length must be between 5 and 10",
-        validateOn: "blur",
-      },
-    ],
   },
 };
